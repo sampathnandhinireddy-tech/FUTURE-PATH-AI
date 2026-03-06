@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile – VidyaGuide</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="grain"></div><div class="mesh"></div></div>
+
+<nav class="nav">
+  <div class="nav-brand"><div class="brand-hex">V</div><span class="brand-name">VidyaGuide</span></div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="profile.html">Profile</a></li>
+    <li><a href="resume.html">Resume</a></li>
+    <li><a href="career.html">Career</a></li>
+    <li><a href="agent.html">AI Agent</a></li>
+  </ul>
+  <button class="nav-cta" onclick="saveAll()">Save Profile</button>
+</nav>
+
+<div class="pg" style="position:relative;z-index:1">
+<div class="wrap">
+  <div class="page-head">
+    <div class="chip mb16">👤 Student Profile</div>
+    <h1 class="heading mb12">Build Your <span class="grad">Smart Profile</span></h1>
+    <p class="text-muted" style="font-size:16px">The more you share, the smarter your AI mentor gets. All data powers your personalised recommendations.</p>
+  </div>
+
+  <div id="alert-box"></div>
+
+  <div class="g2 gap24">
+    <!-- LEFT -->
+    <div style="display:flex;flex-direction:column;gap:20px">
+
+      <div class="card card-p fu">
+        <div class="fw7 mb4" style="font-size:16px">Personal Info</div>
+        <div class="text-muted fs13 mb20">Basic contact & location details</div>
+        <div class="fg"><label class="fl">Full Name</label><input type="text" class="fi" id="f-name" placeholder="e.g. Arjun Mehta"></div>
+        <div class="g2 gap16">
+          <div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="f-email" placeholder="you@email.com"></div>
+          <div class="fg"><label class="fl">Phone</label><input type="tel" class="fi" id="f-phone" placeholder="+91 9876543210"></div>
+        </div>
+        <div class="g2 gap16">
+          <div class="fg"><label class="fl">City</label><input type="text" class="fi" id="f-city" placeholder="Hyderabad"></div>
+          <div class="fg"><label class="fl">LinkedIn URL</label><input type="url" class="fi" id="f-linkedin" placeholder="linkedin.com/in/..."></div>
+        </div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">GitHub URL</label><input type="url" class="fi" id="f-github" placeholder="github.com/username"></div>
+      </div>
+
+      <div class="card card-p fu fu1">
+        <div class="fw7 mb4" style="font-size:16px">Education</div>
+        <div class="text-muted fs13 mb20">Academic background & credentials</div>
+        <div class="fg"><label class="fl">Degree / Programme</label>
+          <select class="fs" id="f-degree">
+            <option value="">Select degree...</option>
+            <option>B.Tech / B.E.</option><option>B.Sc</option><option>B.Com</option>
+            <option>BCA / MCA</option><option>M.Tech / M.E.</option>
+            <option>MBA</option><option>M.Sc</option><option>PhD</option><option>Diploma</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Specialisation / Major</label><input type="text" class="fi" id="f-major" placeholder="e.g. Computer Science, Data Science..."></div>
+        <div class="g2 gap16">
+          <div class="fg"><label class="fl">College / University</label><input type="text" class="fi" id="f-college" placeholder="e.g. JNTU Hyderabad"></div>
+          <div class="fg"><label class="fl">Graduation Year</label>
+            <select class="fs" id="f-year">
+              <option>2028</option><option>2027</option><option>2026</option>
+              <option selected>2025</option><option>2024</option><option>2023</option>
+              <option>2022</option><option>2021</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">CGPA / Percentage</label><input type="text" class="fi" id="f-cgpa" placeholder="e.g. 8.4 CGPA or 82%"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div style="display:flex;flex-direction:column;gap:20px">
+
+      <div class="card card-p fu fu2">
+        <div class="fw7 mb4" style="font-size:16px">Career Goals</div>
+        <div class="text-muted fs13 mb20">Where you're headed</div>
+        <div class="fg"><label class="fl">Target Job Role</label><input type="text" class="fi" id="f-role" placeholder="e.g. Software Engineer, Data Scientist..."></div>
+        <div class="fg"><label class="fl">Target Industry</label>
+          <select class="fs" id="f-industry">
+            <option value="">Select industry...</option>
+            <option>Technology / Software</option><option>Data Science / AI/ML</option>
+            <option>Product Management</option><option>Finance / FinTech</option>
+            <option>Consulting</option><option>Design / UX</option>
+            <option>Cloud / DevOps</option><option>Cybersecurity</option>
+            <option>Marketing / Growth</option><option>Healthcare / MedTech</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Experience Level</label>
+          <select class="fs" id="f-exp">
+            <option>Fresher (0–1 years)</option>
+            <option>Junior (1–3 years)</option>
+            <option>Mid-level (3–5 years)</option>
+            <option>Senior (5+ years)</option>
+          </select>
+        </div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Career Summary / Bio</label>
+          <textarea class="ft" id="f-bio" placeholder="Brief overview of your background and what you're aiming for..." style="min-height:90px"></textarea>
+        </div>
+      </div>
+
+      <div class="card card-p fu fu3">
+        <div class="fw7 mb4" style="font-size:16px">Skills</div>
+        <div class="text-muted fs13 mb16">Add your current skills</div>
+        <div class="flex gap8 mb12">
+          <input type="text" class="fi" id="f-skill-in" placeholder="Type skill and press Enter..." style="flex:1">
+          <button class="btn btn-ghost btn-sm" onclick="addSkill()">Add +</button>
+        </div>
+        <div id="skills-list" style="display:flex;flex-wrap:wrap;gap:4px;min-height:36px;margin-bottom:16px"></div>
+        <div class="text-dim fs13 mb8">Quick add popular skills:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">Python</span>
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">JavaScript</span>
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">SQL</span>
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">React</span>
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">Machine Learning</span>
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">Java</span>
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">Excel</span>
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">Power BI</span>
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">Node.js</span>
+          <span class="chat-chip" onclick="quickSkill(this)" style="cursor:pointer">Docker</span>
+        </div>
+      </div>
+
+      <div class="card card-p fu fu4">
+        <div class="fw7 mb4" style="font-size:16px">Interests & Certifications</div>
+        <div class="fg"><label class="fl">Areas of Interest</label>
+          <textarea class="ft" id="f-interests" placeholder="e.g. Web development, AI/ML, open source, cloud computing..." style="min-height:80px"></textarea>
+        </div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">Certifications</label>
+          <textarea class="ft" id="f-certs" placeholder="e.g. AWS Cloud Practitioner, Google Analytics, Coursera Python..." style="min-height:80px"></textarea>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="tc mt32 mb24">
+    <button class="btn btn-primary" style="padding:15px 52px;font-size:16px" onclick="saveAll()">
+      Save Profile & Continue →
+    </button>
+  </div>
+</div>
+</div>
+
+<script src="../js/utils.js"></script>
+<script>
+let skills = [];
+
+// Load saved profile
+window.addEventListener('DOMContentLoaded', () => {
+  const p = VG.load('profile');
+  const map = {
+    'f-name':p.name,'f-email':p.email,'f-phone':p.phone,'f-city':p.city,
+    'f-linkedin':p.linkedin,'f-github':p.github,'f-major':p.major,
+    'f-college':p.college,'f-cgpa':p.cgpa,'f-role':p.role,
+    'f-bio':p.bio,'f-interests':p.interests,'f-certs':p.certs
+  };
+  Object.entries(map).forEach(([id,v]) => { if (v) { const el = document.getElementById(id); if(el) el.value = v; } });
+  if (p.degree) document.getElementById('f-degree').value = p.degree;
+  if (p.industry) document.getElementById('f-industry').value = p.industry;
+  if (p.exp) document.getElementById('f-exp').value = p.exp;
+  if (p.year) document.getElementById('f-year').value = p.year;
+  if (p.skills) { skills = [...p.skills]; renderSkills(); }
+});
+
+document.getElementById('f-skill-in').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(); } });
+
+function addSkill() {
+  const v = document.getElementById('f-skill-in').value.trim();
+  if (v && !skills.map(s=>s.toLowerCase()).includes(v.toLowerCase())) {
+    skills.push(v); renderSkills(); document.getElementById('f-skill-in').value = '';
+  }
+}
+function quickSkill(el) {
+  const s = el.textContent.trim();
+  if (!skills.map(x=>x.toLowerCase()).includes(s.toLowerCase())) { skills.push(s); renderSkills(); }
+}
+function removeSkill(s) {
+  skills = skills.filter(x => x !== s); renderSkills();
+}
+function renderSkills() {
+  document.getElementById('skills-list').innerHTML = skills.map(s =>
+    `<span class="sk-chip have">${s} <span onclick="removeSkill('${s}')" style="cursor:pointer;margin-left:4px;opacity:.6;font-size:11px">✕</span></span>`
+  ).join('');
+}
+
+function saveAll() {
+  const g = id => document.getElementById(id)?.value || '';
+  const p = {
+    name:g('f-name'),email:g('f-email'),phone:g('f-phone'),city:g('f-city'),
+    linkedin:g('f-linkedin'),github:g('f-github'),
+    degree:g('f-degree'),major:g('f-major'),college:g('f-college'),
+    year:g('f-year'),cgpa:g('f-cgpa'),
+    role:g('f-role'),industry:g('f-industry'),exp:g('f-exp'),
+    bio:g('f-bio'),interests:g('f-interests'),certs:g('f-certs'),
+    skills
+  };
+  VG.save('profile', p);
+  const ab = document.getElementById('alert-box');
+  ab.innerHTML = '<div class="alert alert-ok">✓ Profile saved successfully! Redirecting to Resume Analyser…</div>';
+  setTimeout(() => { window.location.href = 'resume.html'; }, 1400);
+}
+</script>
+</body>
+</html>

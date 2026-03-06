@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Roadmap – VidyaGuide</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="grain"></div><div class="mesh"></div></div>
+
+<nav class="nav">
+  <div class="nav-brand"><div class="brand-hex">V</div><span class="brand-name">VidyaGuide</span></div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="profile.html">Profile</a></li>
+    <li><a href="resume.html">Resume</a></li>
+    <li><a href="career.html">Career</a></li>
+    <li><a href="agent.html">AI Agent</a></li>
+  </ul>
+  <button class="nav-cta" onclick="location.href='agent.html'">Ask AI →</button>
+</nav>
+
+<div class="pg" style="position:relative;z-index:1">
+<div class="wrap">
+  <div class="page-head">
+    <div class="chip mb16">🧭 Career Intelligence</div>
+    <h1 class="heading mb12">Your <span class="grad">Career Roadmap</span></h1>
+    <p class="text-muted" style="font-size:16px">Personalised skill assessment, step-by-step learning path, market intelligence, and top resources.</p>
+  </div>
+
+  <!-- Role Picker -->
+  <div class="card card-p mb24">
+    <div class="flex gap16" style="flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:1;min-width:200px">
+        <label class="fl">Career Path</label>
+        <select class="fs" id="sel-role" onchange="loadCareer()">
+          <option value="swe">Software Engineer</option>
+          <option value="ds">Data Scientist / ML Engineer</option>
+          <option value="pm">Product Manager</option>
+          <option value="devops">DevOps / Cloud Engineer</option>
+          <option value="fs">Full-Stack Developer</option>
+          <option value="da">Data Analyst</option>
+          <option value="ux">UX Designer</option>
+          <option value="cyber">Cybersecurity Analyst</option>
+        </select>
+      </div>
+      <div style="flex:1;min-width:180px">
+        <label class="fl">Experience Level</label>
+        <select class="fs" id="sel-exp" onchange="loadCareer()">
+          <option value="fresh">Fresher (0–1 yr)</option>
+          <option value="junior">Junior (1–3 yrs)</option>
+          <option value="mid">Mid-Level (3–5 yrs)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="loadCareer()">Generate Roadmap ✦</button>
+    </div>
+  </div>
+
+  <!-- Market Stats -->
+  <div class="g4 gap16 mb24" id="market-row">
+    <div class="card stat-box"><span class="stat-val grad2" id="m-salary">₹8–18 LPA</span><span class="text-muted fs13">Avg. Salary</span></div>
+    <div class="card stat-box"><span class="stat-val" style="color:var(--green)" id="m-jobs">45K+</span><span class="text-muted fs13">Job Openings</span></div>
+    <div class="card stat-box"><span class="stat-val" style="color:var(--violet)" id="m-growth">+28% YoY</span><span class="text-muted fs13">Market Growth</span></div>
+    <div class="card stat-box"><span class="stat-val" style="color:var(--amber)" id="m-time">6–9 mo</span><span class="text-muted fs13">Avg. Prep Time</span></div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="g2 gap24" style="align-items:start">
+
+    <!-- Roadmap -->
+    <div class="card card-p">
+      <div class="fw7 mb4" style="font-size:16px">📍 Learning Roadmap</div>
+      <div class="text-muted fs13 mb20" id="rm-subtitle">Step-by-step path to your goal</div>
+      <div id="rm-steps"></div>
+    </div>
+
+    <!-- Right column -->
+    <div style="display:flex;flex-direction:column;gap:20px">
+
+      <!-- Skill Assessment -->
+      <div class="card card-p">
+        <div class="fw7 mb4" style="font-size:16px">⚡ Skill Assessment</div>
+        <div class="text-muted fs13 mb20">Your profile vs. role requirements</div>
+        <div id="skill-bars"></div>
+      </div>
+
+      <!-- Resources -->
+      <div class="card card-p">
+        <div class="fw7 mb4" style="font-size:16px">📚 Top Resources</div>
+        <div class="text-muted fs13 mb20">Curated learning materials</div>
+        <div id="resources"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Companies -->
+  <div class="card card-p mt24">
+    <div class="fw7 mb4" style="font-size:16px">🏢 Top Companies Hiring</div>
+    <div class="text-muted fs13 mb16" id="comp-sub">Companies actively recruiting for this role</div>
+    <div id="companies" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+  </div>
+
+  <!-- CTAs -->
+  <div class="flex gap12 mt24 mb24" style="flex-wrap:wrap">
+    <button class="btn btn-primary" onclick="location.href='agent.html'">Chat with AI Mentor →</button>
+    <button class="btn btn-ghost"   onclick="location.href='resume.html'">Improve My Resume</button>
+  </div>
+</div>
+</div>
+
+<script src="../js/utils.js"></script>
+<script>
+const DB = {
+  swe: {
+    salary:'₹6–22 LPA', jobs:'1.2 Lakh+', growth:'+32% YoY', time:'5–8 mo',
+    subtitle:'From student to professional software engineer',
+    skills:[{n:'Data Structures & Algorithms',h:72,r:92},{n:'System Design',h:35,r:85},{n:'JavaScript / TypeScript',h:68,r:82},{n:'Backend (Node/Python)',h:55,r:78},{n:'Databases (SQL+NoSQL)',h:58,r:75},{n:'Cloud & DevOps',h:22,r:65}],
+    steps:[
+      {ico:'🎯',t:'DSA & CS Fundamentals',d:'Arrays, trees, graphs, DP, OOP, OS basics. Target 200+ LeetCode problems.',s:'done',tm:'3–4 months'},
+      {ico:'💻',t:'Primary Language & Framework',d:'Deep dive into Python or JS/TS. Build REST APIs. Understand design patterns.',s:'current',tm:'2–3 months'},
+      {ico:'🗄',t:'Databases & System Design',d:'SQL + MongoDB, indexing, caching, load balancing. Study HLD/LLD patterns.',s:'next',tm:'2 months'},
+      {ico:'☁',t:'Cloud & DevOps Basics',d:'AWS free tier, Docker, GitHub Actions CI/CD, basic Kubernetes.',s:'next',tm:'2 months'},
+      {ico:'🚀',t:'Portfolio & Job Applications',d:'3+ deployed projects on GitHub. Polish resume. Mock interviews. Apply.',s:'next',tm:'Ongoing'},
+    ],
+    resources:[{i:'🎓',n:"Striver's A2Z DSA Sheet",t:'Free',d:'Best structured DSA prep for placements'},{i:'📺',n:'CS50 – Harvard (edX)',t:'Free',d:'Gold standard CS foundations course'},{i:'💡',n:'System Design Primer (GitHub)',t:'Free',d:'Comprehensive system design reference'},{i:'🖥',n:'The Odin Project',t:'Free',d:'Full web dev curriculum, project-based'}],
+    companies:['Google','Microsoft','Amazon','Flipkart','Infosys','Wipro','Razorpay','Freshworks','Swiggy','Atlassian','Paytm','Zomato','Zepto','CRED']
+  },
+  ds: {
+    salary:'₹7–26 LPA', jobs:'62K+', growth:'+46% YoY', time:'6–10 mo',
+    subtitle:'Master AI/ML and land your data science role',
+    skills:[{n:'Python (Pandas/NumPy)',h:70,r:92},{n:'Machine Learning',h:45,r:87},{n:'Statistics & Probability',h:52,r:82},{n:'SQL',h:60,r:78},{n:'Deep Learning (TF/PyTorch)',h:22,r:72},{n:'Data Visualisation',h:62,r:70}],
+    steps:[
+      {ico:'📊',t:'Python & Statistics',d:'NumPy, Pandas, Matplotlib, Seaborn. Probability, distributions, hypothesis testing.',s:'done',tm:'2–3 months'},
+      {ico:'🤖',t:'Core Machine Learning',d:'Supervised/unsupervised learning, scikit-learn, evaluation metrics, feature engineering.',s:'current',tm:'3 months'},
+      {ico:'🧠',t:'Deep Learning & NLP',d:'Neural nets, CNNs, RNNs, Transformers, HuggingFace. Kaggle competitions.',s:'next',tm:'3–4 months'},
+      {ico:'🔧',t:'MLOps & Deployment',d:'MLflow, Docker, FastAPI for model serving. AWS SageMaker basics.',s:'next',tm:'2 months'},
+      {ico:'🏆',t:'Portfolio & Kaggle',d:'5 end-to-end projects. Kaggle Top 10% in 2 competitions. Publish on GitHub.',s:'next',tm:'Ongoing'},
+    ],
+    resources:[{i:'🎓',n:'fast.ai Deep Learning',t:'Free',d:'Practical top-down deep learning'},{i:'📘',n:'Kaggle Learn',t:'Free',d:'Hands-on ML micro-courses with datasets'},{i:'💡',n:'StatQuest – Josh Starmer',t:'Free',d:'Statistics & ML explained visually'},{i:'🎥',n:'Andrew Ng ML Specialisation',t:'Paid',d:'The gold standard ML course (Coursera)'}],
+    companies:['Google','Amazon','Microsoft','Flipkart','Ola','PhonePe','Meesho','Groww','Delhivery','Myntra','LinkedIn India','Adobe']
+  },
+  pm: {
+    salary:'₹10–32 LPA', jobs:'28K+', growth:'+38% YoY', time:'4–7 mo',
+    subtitle:'Lead products that millions of people love',
+    skills:[{n:'Product Strategy',h:48,r:87},{n:'Data Analysis / SQL',h:55,r:80},{n:'User Research (UX)',h:52,r:80},{n:'Agile / Scrum',h:65,r:75},{n:'Figma / Wireframing',h:38,r:68},{n:'Go-to-Market',h:30,r:65}],
+    steps:[
+      {ico:'🔍',t:'PM Fundamentals',d:'PRDs, user stories, RICE prioritisation, competitive analysis, product lifecycle.',s:'done',tm:'2 months'},
+      {ico:'📊',t:'Data-Driven Decision Making',d:'SQL basics, Google Analytics, A/B testing, funnel analysis, KPIs & OKRs.',s:'current',tm:'2 months'},
+      {ico:'🎨',t:'UX & User Research',d:'User interviews, Figma wireframing, usability testing, design thinking methods.',s:'next',tm:'2 months'},
+      {ico:'💼',t:'Build Product Portfolio',d:'3 PM case studies, mock PRDs, product teardowns of top apps.',s:'next',tm:'3 months'},
+      {ico:'🚀',t:'PM Interview Prep & Apply',d:'Product sense, analytical, execution rounds. Network on LinkedIn. Apply.',s:'next',tm:'Ongoing'},
+    ],
+    resources:[{i:'📗',n:"Inspired – Marty Cagan",t:'Book',d:'The definitive PM bible'},{i:'🎓',n:'Reforge PM Programme',t:'Paid',d:'Industry-leading PM curriculum'},{i:'💡',n:"Lenny's Newsletter",t:'Free',d:'Practical PM advice & case studies'},{i:'📺',n:'Product School YouTube',t:'Free',d:'PM interview questions & walkthroughs'}],
+    companies:['Google','Microsoft','Atlassian','Flipkart','Amazon','Swiggy','Razorpay','CRED','Notion','Figma','Zepto','Meesho']
+  },
+  devops: {
+    salary:'₹8–24 LPA', jobs:'42K+', growth:'+36% YoY', time:'5–8 mo',
+    subtitle:'Cloud, containers, and continuous delivery at scale',
+    skills:[{n:'Linux & Shell Scripting',h:64,r:92},{n:'Docker & Kubernetes',h:32,r:88},{n:'CI/CD Pipelines',h:44,r:82},{n:'AWS / Azure / GCP',h:38,r:80},{n:'Terraform / IaC',h:18,r:72},{n:'Monitoring (Prometheus)',h:22,r:65}],
+    steps:[
+      {ico:'🐧',t:'Linux & Networking',d:'Shell scripting, file systems, networking, SSH, cron, systemd, permissions.',s:'done',tm:'2 months'},
+      {ico:'🐳',t:'Docker & Kubernetes',d:'Containerisation, Docker Compose, K8s orchestration, Helm charts, namespaces.',s:'current',tm:'3 months'},
+      {ico:'☁',t:'Cloud Platform (AWS first)',d:'EC2, S3, RDS, Lambda, VPC, IAM. Get AWS Solutions Architect Associate certified.',s:'next',tm:'3 months'},
+      {ico:'🔄',t:'Infrastructure as Code',d:'Terraform, Ansible, GitHub Actions, Jenkins. Automate entire deployment pipelines.',s:'next',tm:'2 months'},
+      {ico:'📈',t:'Monitoring & SRE',d:'Prometheus, Grafana, ELK Stack, incident management, SLOs, error budgets.',s:'next',tm:'2 months'},
+    ],
+    resources:[{i:'🎓',n:'KodeKloud DevOps Path',t:'Paid',d:'Best hands-on DevOps learning platform'},{i:'📺',n:'TechWorld with Nana',t:'Free',d:'Docker, K8s, DevOps tutorials'},{i:'☁',n:'AWS Free Tier + Docs',t:'Free',d:'Learn on real AWS infrastructure'},{i:'📘',n:'The DevOps Handbook',t:'Book',d:'DevOps philosophy & transformation'}],
+    companies:['Amazon','Microsoft','Google','HCL','Cognizant','ThoughtWorks','Freshworks','Razorpay','Juspay','CRED','Zeta','Setu']
+  },
+  fs: {
+    salary:'₹6–20 LPA', jobs:'85K+', growth:'+30% YoY', time:'5–7 mo',
+    subtitle:'Build complete web applications from frontend to backend',
+    skills:[{n:'HTML/CSS/JavaScript',h:76,r:92},{n:'React / Vue / Angular',h:55,r:87},{n:'Node.js / Python Backend',h:50,r:82},{n:'Databases (SQL+NoSQL)',h:52,r:78},{n:'REST APIs / GraphQL',h:46,r:75},{n:'Git & Deployment',h:64,r:70}],
+    steps:[
+      {ico:'🎨',t:'HTML, CSS & JavaScript Mastery',d:'Responsive design, ES6+, DOM, Fetch API, async/await, LocalStorage.',s:'done',tm:'2–3 months'},
+      {ico:'⚛',t:'Frontend Framework (React)',d:'Components, hooks, state management (Redux), React Router, testing basics.',s:'current',tm:'2–3 months'},
+      {ico:'🔧',t:'Backend Development',d:'Node.js + Express or Python + FastAPI. REST APIs, JWT auth, middleware.',s:'next',tm:'2 months'},
+      {ico:'🗄',t:'Databases & Deployment',d:'PostgreSQL, MongoDB, Redis. Deploy on Vercel, Render, or AWS EC2.',s:'next',tm:'2 months'},
+      {ico:'🚀',t:'Portfolio Projects & Apply',d:'3–5 full-stack apps with auth, payments, live users. Polish GitHub profile.',s:'next',tm:'Ongoing'},
+    ],
+    resources:[{i:'🎓',n:'The Odin Project',t:'Free',d:'Complete full-stack curriculum'},{i:'📺',n:'Traversy Media YouTube',t:'Free',d:'Project-based web dev tutorials'},{i:'💻',n:'freeCodeCamp',t:'Free',d:'Structured web dev certifications'},{i:'📘',n:'Full Stack Open (Helsinki)',t:'Free',d:'Modern React + Node.js course'}],
+    companies:['Razorpay','Swiggy','Zomato','Freshworks','Zoho','Postman','Hasura','Chargebee','Urban Company','BrowserStack','Bounce','Saleor']
+  },
+  da: {
+    salary:'₹4–14 LPA', jobs:'58K+', growth:'+28% YoY', time:'4–6 mo',
+    subtitle:'Turn raw data into decisions that drive business growth',
+    skills:[{n:'Excel / Google Sheets',h:72,r:88},{n:'SQL',h:48,r:92},{n:'Python (Pandas)',h:38,r:78},{n:'Power BI / Tableau',h:32,r:82},{n:'Statistics',h:54,r:72},{n:'Business Communication',h:60,r:68}],
+    steps:[
+      {ico:'📊',t:'Excel & Statistics',d:'Advanced Excel, pivot tables, VLOOKUP, statistical concepts, data cleaning.',s:'done',tm:'1–2 months'},
+      {ico:'🗄',t:'SQL Mastery',d:'Joins, aggregations, window functions, CTEs, query optimisation. Mode Analytics.',s:'current',tm:'2 months'},
+      {ico:'📈',t:'Visualisation (Power BI / Tableau)',d:'Dashboard design, data storytelling, interactive reports, DAX basics.',s:'next',tm:'2 months'},
+      {ico:'🐍',t:'Python for Analytics',d:'Pandas, NumPy, Matplotlib, Seaborn. End-to-end analysis on real datasets.',s:'next',tm:'2 months'},
+      {ico:'💼',t:'Portfolio & Case Studies',d:'5 analysis projects with business insights. Present findings clearly. Apply.',s:'next',tm:'Ongoing'},
+    ],
+    resources:[{i:'🎓',n:'Alex the Analyst YouTube',t:'Free',d:'SQL, Excel, Power BI walkthroughs'},{i:'📘',n:'Mode Analytics SQL Tutorial',t:'Free',d:'Interactive SQL with real datasets'},{i:'💡',n:'Kaggle Datasets',t:'Free',d:'Real datasets for practice projects'},{i:'🎥',n:'Google Data Analytics (Coursera)',t:'Paid',d:'Recognised data analytics certification'}],
+    companies:['Flipkart','Amazon','Paytm','Nykaa','BigBasket','PhonePe','Upstox','Zerodha','PolicyBazaar','IndiaMart','JioSaavn','ShareChat']
+  },
+  ux: {
+    salary:'₹5–18 LPA', jobs:'20K+', growth:'+33% YoY', time:'4–6 mo',
+    subtitle:'Design experiences that delight and convert users',
+    skills:[{n:'Figma / Design Tools',h:55,r:92},{n:'User Research Methods',h:50,r:85},{n:'Wireframing & Prototyping',h:48,r:85},{n:'Interaction Design',h:42,r:80},{n:'Usability Testing',h:38,r:75},{n:'Design Systems',h:30,r:70}],
+    steps:[
+      {ico:'🎨',t:'Design Foundations',d:'Visual design principles, typography, colour theory, gestalt, accessibility.',s:'done',tm:'1–2 months'},
+      {ico:'🖥',t:'Figma Mastery',d:'Components, auto-layout, variants, prototyping, design system creation.',s:'current',tm:'2 months'},
+      {ico:'🔍',t:'UX Research Methods',d:'User interviews, surveys, card sorting, affinity mapping, journey maps.',s:'next',tm:'2 months'},
+      {ico:'📱',t:'Build a Portfolio',d:'3–5 full case studies showing research → design → test → iterate cycle.',s:'next',tm:'3 months'},
+      {ico:'🚀',t:'Apply & Network',d:'Behance, Dribbble profile. LinkedIn content. Apply to UX roles. Network.',s:'next',tm:'Ongoing'},
+    ],
+    resources:[{i:'🎓',n:'Google UX Design (Coursera)',t:'Paid',d:'Most recognised UX certification'},{i:'📺',n:'DesignCourse YouTube',t:'Free',d:'UI/UX design tutorials'},{i:'💡',n:'Nielsen Norman Group',t:'Free',d:'Evidence-based UX research articles'},{i:'📘',n:"Don't Make Me Think – Krug",t:'Book',d:'Classic UX & usability book'}],
+    companies:['Flipkart','Amazon','Swiggy','Zomato','Meesho','CRED','Dunzo','PhonePe','Groww','Navi','Juspay','InMobi']
+  },
+  cyber: {
+    salary:'₹7–22 LPA', jobs:'35K+', growth:'+40% YoY', time:'6–9 mo',
+    subtitle:'Defend systems, hunt threats, and protect data',
+    skills:[{n:'Networking Fundamentals',h:62,r:92},{n:'Linux & Scripting',h:58,r:88},{n:'Ethical Hacking / PenTest',h:32,r:82},{n:'Security Tools (Wireshark…)',h:28,r:78},{n:'Incident Response',h:22,r:70},{n:'Cloud Security',h:18,r:65}],
+    steps:[
+      {ico:'🌐',t:'Networking & Linux',d:'TCP/IP, DNS, HTTP, OSI model, Linux admin, bash scripting, firewall config.',s:'done',tm:'2 months'},
+      {ico:'🔐',t:'Security Fundamentals',d:'CIA triad, cryptography, OWASP Top 10, auth patterns, vulnerability types.',s:'current',tm:'2 months'},
+      {ico:'⚔',t:'Ethical Hacking & PenTesting',d:'Kali Linux, Metasploit, Burp Suite, Nmap. TryHackMe & HackTheBox labs.',s:'next',tm:'3 months'},
+      {ico:'🛡',t:'Certifications',d:'CompTIA Security+, CEH, or eJPT. Adds significant credibility to your resume.',s:'next',tm:'3 months'},
+      {ico:'🚀',t:'Portfolio & Apply',d:'CTF writeups, home lab setup, GitHub security scripts, bug bounty reports.',s:'next',tm:'Ongoing'},
+    ],
+    resources:[{i:'🎓',n:'TryHackMe',t:'Free/Paid',d:'Guided cybersecurity learning paths'},{i:'🖥',n:'HackTheBox',t:'Free/Paid',d:'Real-world penetration testing labs'},{i:'📘',n:'CompTIA Security+ Study Guide',t:'Paid',d:'Industry standard certification prep'},{i:'📺',n:'Professor Messer (YouTube)',t:'Free',d:'Free Security+ video course'}],
+    companies:['TCS','Infosys','HCL','IBM','Accenture','Wipro','Quick Heal','Seqrite','Cyfirma','TAC Security','Lucideus','SISA']
+  }
+};
+
+function loadCareer() {
+  const key = document.getElementById('sel-role').value;
+  const d   = DB[key] || DB.swe;
+  const p   = VG.load('profile');
+  const profSkills = (p.skills||[]).map(s=>s.toLowerCase());
+
+  // Market
+  document.getElementById('m-salary').textContent = d.salary;
+  document.getElementById('m-jobs').textContent   = d.jobs;
+  document.getElementById('m-growth').textContent = d.growth;
+  document.getElementById('m-time').textContent   = d.time;
+  document.getElementById('rm-subtitle').textContent = d.subtitle;
+
+  // Roadmap steps
+  document.getElementById('rm-steps').innerHTML = d.steps.map(s => `
+    <div class="rm-item">
+      <div class="rm-dot ${s.s}">${s.s==='done'?'✓':s.s==='current'?'▶':s.ico}</div>
+      <div class="rm-body">
+        <h4>${s.t}<span class="rm-time">${s.tm}</span></h4>
+        <p>${s.d}</p>
+        ${s.s==='done'?'<span class="badge badge-green mt8" style="display:inline-flex;margin-top:6px">Completed</span>':''}
+        ${s.s==='current'?'<span class="badge badge-cyan mt8" style="display:inline-flex;margin-top:6px">In Progress</span>':''}
+      </div>
+    </div>`).join('');
+
+  // Skills
+  document.getElementById('skill-bars').innerHTML = d.skills.map(sk => {
+    const has   = profSkills.some(ps => ps.includes(sk.n.toLowerCase().split(/[\s\/]/)[0]));
+    const level = has ? sk.h : Math.max(8, sk.h - 18);
+    const pct   = Math.min(100, Math.round(level / sk.r * 100));
+    const gap   = sk.r - level;
+    const cls   = gap <= 8 ? 'badge-green' : gap <= 28 ? 'badge-amber' : 'badge-red';
+    const lbl   = gap <= 8 ? 'Strong' : gap <= 28 ? 'Developing' : 'Needs Work';
+    return `
+    <div style="margin-bottom:18px">
+      <div class="flex-sb mb6">
+        <span class="fs14">${sk.n}</span>
+        <span class="badge ${cls}">${lbl}</span>
+      </div>
+      <div class="flex-ac gap8">
+        <div class="prog-wrap" style="flex:1"><div class="prog-bar" data-w="${pct}" style="width:0%"></div></div>
+        <span class="text-dim" style="font-size:11px;font-family:var(--mono);width:48px;text-align:right">${level}/${sk.r}</span>
+      </div>
+    </div>`;
+  }).join('');
+  setTimeout(animateBars, 120);
+
+  // Resources
+  document.getElementById('resources').innerHTML = d.resources.map(r => `
+    <div class="flex-ac gap12" style="padding:12px 0;border-bottom:1px solid var(--glass-b)">
+      <span style="font-size:22px;flex-shrink:0">${r.i}</span>
+      <div style="flex:1">
+        <div class="fw7 fs14 mb4">${r.n}</div>
+        <div class="text-muted fs13">${r.d}</div>
+      </div>
+      <span class="badge ${r.t==='Free'?'badge-green':r.t==='Book'?'badge-violet':'badge-blue'}">${r.t}</span>
+    </div>`).join('');
+
+  // Companies
+  document.getElementById('companies').innerHTML = d.companies.map(c =>
+    `<div class="card" style="padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:600">${c}</div>`
+  ).join('');
+  document.getElementById('comp-sub').textContent = `${d.companies.length} companies actively hiring for this role`;
+}
+
+// Auto-set from profile
+window.addEventListener('DOMContentLoaded', () => {
+  const p = VG.load('profile');
+  const roleMap = {
+    'Technology / Software':'swe','Data Science / AI/ML':'ds',
+    'Product Management':'pm','Cloud / DevOps':'devops','Design / UX':'ux'
+  };
+  if (p.industry && roleMap[p.industry]) document.getElementById('sel-role').value = roleMap[p.industry];
+  if (p.exp) {
+    const s = document.getElementById('sel-exp');
+    if (p.exp.includes('1–3')) s.value = 'junior';
+    else if (p.exp.includes('3–5')) s.value = 'mid';
+  }
+  loadCareer();
+});
+</script>
+</body>
+</html>

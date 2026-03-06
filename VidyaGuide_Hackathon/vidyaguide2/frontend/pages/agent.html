@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Career Agent – VidyaGuide</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body style="overflow:hidden;height:100vh">
+<div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="grain"></div><div class="mesh"></div></div>
+
+<nav class="nav">
+  <div class="nav-brand"><div class="brand-hex">V</div><span class="brand-name">VidyaGuide</span></div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="profile.html">Profile</a></li>
+    <li><a href="resume.html">Resume</a></li>
+    <li><a href="career.html">Career</a></li>
+    <li><a href="agent.html">AI Agent</a></li>
+  </ul>
+  <button class="nav-cta btn-sm" onclick="clearChat()">New Chat</button>
+</nav>
+
+<div class="chat-shell" style="position:relative;z-index:1">
+  <div class="chat-layout">
+
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+      <!-- Agent card -->
+      <div class="card card-p-sm tc">
+        <div class="sidebar-avatar">🤖</div>
+        <div class="fw7 mb4">Vidya AI</div>
+        <div class="text-muted fs13 mb8">Your Career Mentor</div>
+        <div class="fs13" style="color:var(--green)"><span class="online-dot"></span> Online</div>
+      </div>
+
+      <!-- Quick ask -->
+      <div>
+        <div class="label mb10" style="padding:0 4px">Quick Ask</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="qa-btn" onclick="qa('Give me a 6-month career plan to become job-ready as a software engineer')"><span class="qa-ico">🎯</span>6-Month Career Plan</button>
+          <button class="qa-btn" onclick="qa('What are the top skills I must learn for software engineering in 2025?')"><span class="qa-ico">⚡</span>Top Skills to Learn</button>
+          <button class="qa-btn" onclick="qa('How should I prepare for software engineering interviews? Give me a structured plan.')"><span class="qa-ico">💼</span>Interview Prep Guide</button>
+          <button class="qa-btn" onclick="qa('How do I write a LinkedIn profile that attracts recruiters?')"><span class="qa-ico">🔗</span>LinkedIn Tips</button>
+          <button class="qa-btn" onclick="qa('What is the salary range for a fresher software engineer in India and how do I negotiate?')"><span class="qa-ico">💰</span>Salary Guide</button>
+          <button class="qa-btn" onclick="qa('I have a non-CS background. How do I switch to software engineering?')"><span class="qa-ico">🔄</span>Career Switch Path</button>
+        </div>
+      </div>
+
+      <!-- Profile summary -->
+      <div class="card card-p-sm" id="prof-card">
+        <div class="label mb10">Your Profile</div>
+        <div id="prof-info" class="text-muted fs13"><a href="profile.html" style="color:var(--cyan)">+ Set up profile for personalised advice</a></div>
+      </div>
+    </div>
+
+    <!-- Main chat -->
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="chat-avatar">🤖</div>
+        <div style="flex:1">
+          <div class="fw7">Vidya — AI Career Mentor</div>
+          <div class="text-muted fs13" id="agent-status">Powered by AI · Ready to help</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="exportChat()" title="Export conversation">↓ Export</button>
+      </div>
+
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="msg ai">
+          <div class="msg-bub">
+            👋 Hi! I'm <strong>Vidya</strong>, your AI Career Mentor.<br><br>
+            I specialise in helping students like you with:<br>
+            • 📄 <strong>Resume optimisation</strong> and ATS improvement<br>
+            • 🧭 <strong>Career roadmaps</strong> and goal setting<br>
+            • 💼 <strong>Interview preparation</strong> for all rounds<br>
+            • 💰 <strong>Salary benchmarks</strong> and negotiation tactics<br>
+            • 🎓 <strong>Learning resources</strong> tailored to your goals<br><br>
+            What's on your mind today?
+          </div>
+          <div class="msg-meta">Vidya · just now</div>
+        </div>
+      </div>
+
+      <div class="chat-chips" id="chips">
+        <span class="chat-chip" onclick="qa('What skills should I learn for a software engineering role?')">SWE skills 💻</span>
+        <span class="chat-chip" onclick="qa('How do I write a good resume with no experience?')">Resume with no experience 📄</span>
+        <span class="chat-chip" onclick="qa('What are the highest paying tech careers in India?')">High-paying careers 💰</span>
+        <span class="chat-chip" onclick="qa('How do I crack campus placements at top companies?')">Campus placements 🎓</span>
+      </div>
+
+      <div class="chat-bar">
+        <textarea class="chat-inp" id="msg-in" placeholder="Ask Vidya anything about your career…" rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
+          oninput="autoH(this)"></textarea>
+        <button class="chat-send" id="send-btn" onclick="send()">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../js/utils.js"></script>
+<script>
+let hist = [];
+let busy = false;
+
+window.addEventListener('DOMContentLoaded', () => {
+  const p = VG.load('profile');
+  const el = document.getElementById('prof-info');
+  if (p.name) {
+    el.innerHTML = `
+      <div class="fw7 mb4">${p.name}</div>
+      ${p.degree?`<div class="mb4">${p.degree}${p.major?' · '+p.major:''}</div>`:''}
+      ${p.role?`<div style="color:var(--cyan)" class="mb8">→ ${p.role}</div>`:''}
+      ${p.skills?.length?`<div>${p.skills.slice(0,5).map(s=>`<span class="sk-chip have" style="font-size:11px;padding:3px 9px;margin:2px">${s}</span>`).join('')}</div>`:''}
+    `;
+  }
+});
+
+function autoH(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 130) + 'px';
+}
+
+function qa(txt) {
+  document.getElementById('msg-in').value = txt;
+  send();
+}
+
+async function send() {
+  if (busy) return;
+  const inp = document.getElementById('msg-in');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = ''; inp.style.height = 'auto';
+
+  addMsg('me', txt);
+  hist.push({ role:'user', content:txt });
+
+  const chips = document.getElementById('chips');
+  if (chips) chips.style.display = 'none';
+
+  busy = true;
+  document.getElementById('send-btn').style.opacity = '.45';
+  document.getElementById('agent-status').textContent = 'Vidya is thinking…';
+
+  const tid = showTyping();
+
+  const p = VG.load('profile');
+  let reply;
+
+  try {
+    const res = await fetch('/api/agent/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ messages: hist.slice(-12), profile: p })
+    });
+    if (res.ok) { const d = await res.json(); reply = d.reply || d.message; }
+  } catch(e) {}
+
+  if (!reply) reply = smartReply(txt, p);
+
+  removeTyping(tid);
+  hist.push({ role:'assistant', content: reply });
+  addMsg('ai', reply);
+
+  busy = false;
+  document.getElementById('send-btn').style.opacity = '1';
+  document.getElementById('agent-status').textContent = 'Powered by AI · Ready to help';
+}
+
+function addMsg(who, txt) {
+  const box = document.getElementById('chat-msgs');
+  const d = document.createElement('div');
+  d.className = `msg ${who}`;
+  d.innerHTML = `<div class="msg-bub">${fmtText(txt)}</div><div class="msg-meta">${who==='me'?'You':'Vidya'} · ${nowTime()}</div>`;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = document.getElementById('chat-msgs');
+  const id  = 'ty-' + Date.now();
+  const d   = document.createElement('div');
+  d.className = 'msg ai'; d.id = id;
+  d.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
+  box.appendChild(d); box.scrollTop = box.scrollHeight;
+  return id;
+}
+function removeTyping(id) { document.getElementById(id)?.remove(); }
+
+function clearChat() {
+  hist = [];
+  const box = document.getElementById('chat-msgs');
+  box.innerHTML = `<div class="msg ai"><div class="msg-bub">Chat cleared! I'm <strong>Vidya</strong>, your AI Career Mentor. What would you like to work on today?</div><div class="msg-meta">Vidya · ${nowTime()}</div></div>`;
+  const chips = document.getElementById('chips');
+  if (chips) chips.style.display = 'flex';
+}
+
+function exportChat() {
+  const txt = hist.map(m => `${m.role === 'user' ? 'You' : 'Vidya'}: ${m.content}`).join('\n\n---\n\n');
+  const blob = new Blob([`VidyaGuide AI Chat Export\n${new Date().toLocaleString()}\n\n${txt}`], {type:'text/plain'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'vidyaguide-chat.txt'; a.click();
+}
+
+function smartReply(msg, p) {
+  const m = msg.toLowerCase();
+  const role = p.role || 'software engineer';
+
+  if (/(resume|cv|curriculum)/i.test(m)) return `**Resume Tips for ${role}:**\n\n**The Golden Rules:**\n• **Quantify everything** — "Reduced API response time by 42%" beats "improved performance"\n• **Keywords are king** — mirror exact language from job descriptions\n• **Action verbs lead** — Built, Designed, Led, Optimised, Delivered, Reduced\n\n**ATS Survival Guide:**\n• Standard section headings (Experience, Education, Skills, Projects)\n• No tables, columns, or graphics in the main body\n• Save as PDF (unless instructed otherwise)\n• Font size 10–12pt, name at top in 16–18pt\n\n**For ${role} specifically:**\n• GitHub + portfolio link in the header\n• Projects section with live demo URLs\n• Certifications relevant to the role\n\nWant me to rewrite specific bullet points from your resume?`;
+
+  if (/(interview|placement|crack|round|hire)/i.test(m)) return `**Interview Preparation Roadmap 💼**\n\n**Technical Preparation:**\n• **DSA:** Striver's A2Z Sheet (structured, 450 problems) — aim for 200+ before applying\n• **System Design:** HLD for senior roles, LLD for all — Grokking System Design is excellent\n• **Coding Practice:** 3 problems/day minimum. Focus on patterns, not quantity\n\n**Timeline:**\n• 3 months out → DSA intensive + 2 solid projects\n• 1 month out → Company-specific prep + mock interviews (Pramp, InterviewBit)\n• 1 week out → Research the company, latest news, glassdoor reviews\n\n**Behavioural (STAR Method):**\nPrepare 6 stories covering: leadership, failure & learning, conflict resolution, biggest achievement, cross-team collaboration, handling ambiguity.\n\n**Pro Tip:** Think out loud during coding rounds — interviewers value your reasoning more than just the answer.\n\nWhich company or round are you prepping for? I can give you targeted advice!`;
+
+  if (/(skill|learn|course|roadmap|study)/i.test(m)) return `**Skills to Master for ${role} in 2025 ⚡**\n\n**Tier 1 — Non-Negotiable:**\n• DSA fundamentals (required by every tech company)\n• Your primary language deeply (Python or JavaScript/TypeScript)\n• SQL — required in 80%+ of tech roles\n• Git + GitHub (version control is a must)\n\n**Tier 2 — Strong Differentiator:**\n• Cloud basics (AWS Free Tier — get your hands dirty)\n• Docker & basic containerisation\n• System design concepts (scalability, caching, databases)\n\n**Tier 3 — Stand Out in 2025:**\n• AI/ML integration into apps — massive trend\n• Open source contributions on GitHub\n• Technical writing or documentation skills\n\n**Best Free Learning Path:**\n🎓 CS50 → Striver's DSA → The Odin Project → AWS Free Tier\n\n**Daily Habit:** 45 focused minutes beats 4 distracted hours.\n\nWant a personalised 90-day study plan for your specific target role?`;
+
+  if (/(salary|pay|lpa|ctc|offer|negotiate|package)/i.test(m)) return `**India Tech Salary Intelligence 2025 💰**\n\n**Fresher Ranges by Company Tier:**\n\n| Tier | Examples | Package |\n|------|----------|----------|\n| Service cos | TCS, Infosys, Wipro | ₹3.5–6 LPA |\n| Mid product | Freshworks, Zoho | ₹8–16 LPA |\n| Top startups | Razorpay, CRED, Swiggy | ₹15–30 LPA |\n| FAANG India | Google, Amazon, MS | ₹28–60 LPA |\n\n**Negotiation Playbook:**\n1. Research first — Glassdoor, levels.fyi, LinkedIn Salary\n2. Never reveal your number first — let them anchor\n3. Counter 15–20% above their initial offer\n4. Negotiate the full package: base + ESOPs + joining bonus + WFH policy\n\n**What Doubles Your Package:**\n✅ Strong DSA + system design skills\n✅ Competing offer (even informal — mention it)\n✅ Top college / internship at a reputed company\n✅ Visible open source work / notable side projects\n\nWhat offer are you evaluating? I can help you craft a negotiation response!`;
+
+  if (/(linkedin|profile|network|connect)/i.test(m)) return `**LinkedIn Profile that Attracts Recruiters 🔗**\n\n**Headline (Most Important Field):**\nDon't write just "Student at XYZ College"\n✅ Write: *"Aspiring Software Engineer | Python · React · AWS | Open to 2025 Opportunities"*\n\n**About Section:**\n• 4–5 lines: who you are, what you build, what you're looking for\n• End with a soft CTA: "Open to full-time roles and internships in…"\n• Pack relevant keywords naturally\n\n**Featured Section:**\n• Pin your best GitHub project or portfolio website\n• Add your top certification\n\n**Growth Tactics:**\n• Post 3x/week: project updates, learnings, article summaries\n• Comment meaningfully on posts from hiring managers & tech leads\n• Connect with 5–10 people in your target industry daily\n• Engage with company pages you're targeting\n\n**Profile Photo:** Professional, well-lit, plain background, smiling.\n\nWant me to write a LinkedIn summary template for your specific background?`;
+
+  // Default
+  return `Thanks for your question! Here's my focused guidance:\n\nAs someone targeting **${role}**, here's what matters most right now:\n\n**Your Immediate Priorities:**\n• Set a clear 90-day goal with measurable milestones\n• Identify your top 3 skill gaps vs. the role's requirements\n• Build one project this month that directly demonstrates those missing skills\n\n**The Mindset Shift:**\nMost students over-prepare theory and under-deliver projects. Recruiters in 2025 want to see what you've **built**, not just what you've learned.\n\n**Your Next 3 Actions:**\n1. Complete your VidyaGuide profile for personalised recommendations\n2. Upload your resume for an ATS score and improvement tips\n3. Review the career roadmap for your target role\n\n**Indian Market Reality:** The job market is competitive but opportunity-rich for those who prepare *systematically* and can demonstrate skills with real work.\n\nCould you share more about your specific situation? The more context you give me, the more targeted my advice can be! 🚀`;
+}
+</script>
+</body>
+</html>

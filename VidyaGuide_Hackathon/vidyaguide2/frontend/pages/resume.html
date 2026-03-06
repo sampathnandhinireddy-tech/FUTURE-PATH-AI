@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Analyser – VidyaGuide</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="ambient"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="grain"></div><div class="mesh"></div></div>
+
+<nav class="nav">
+  <div class="nav-brand"><div class="brand-hex">V</div><span class="brand-name">VidyaGuide</span></div>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="profile.html">Profile</a></li>
+    <li><a href="resume.html">Resume</a></li>
+    <li><a href="career.html">Career</a></li>
+    <li><a href="agent.html">AI Agent</a></li>
+  </ul>
+  <button class="nav-cta" onclick="location.href='career.html'">Career Map →</button>
+</nav>
+
+<div class="pg" style="position:relative;z-index:1">
+<div class="wrap">
+  <div class="page-head">
+    <div class="chip mb16">📄 AI Resume Analyser</div>
+    <h1 class="heading mb12">Instant <span class="grad">Resume Review</span></h1>
+    <p class="text-muted" style="font-size:16px">ATS score, keyword gaps, content quality, and line-by-line improvement suggestions powered by AI.</p>
+  </div>
+
+  <!-- Upload Section -->
+  <div id="sec-upload">
+    <div class="drop fu" id="drop-zone" onclick="document.getElementById('file-in').click()"
+         ondragover="event.preventDefault();this.classList.add('drag')"
+         ondragleave="this.classList.remove('drag')"
+         ondrop="handleDrop(event)">
+      <div class="drop-ico">📎</div>
+      <h3>Drop your resume here</h3>
+      <p style="margin-bottom:18px">Supports PDF, DOCX, TXT · Max 5 MB</p>
+      <span class="btn btn-ghost btn-sm" style="pointer-events:none">Browse Files</span>
+      <input type="file" id="file-in" accept=".pdf,.docx,.txt" style="display:none" onchange="handleFile(event)">
+    </div>
+    <div class="tc text-muted fs13" style="margin:20px 0">— or paste your resume below —</div>
+    <div class="card card-p fu fu1">
+      <div class="fg"><label class="fl">Resume Text</label>
+        <textarea class="ft" id="resume-txt" placeholder="Paste your resume content here..." style="min-height:220px"></textarea>
+      </div>
+      <div class="g2 gap16">
+        <div class="fg"><label class="fl">Target Role</label>
+          <input type="text" class="fi" id="target-role" placeholder="e.g. Software Engineer at Amazon">
+        </div>
+        <div class="fg"><label class="fl">Job Description (optional)</label>
+          <textarea class="ft" id="job-desc" placeholder="Paste JD for targeted keyword matching..." style="min-height:50px"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary full" style="padding:16px;font-size:15px" onclick="runAnalysis()">
+        ✦ Analyse Resume with AI
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="sec-loading" style="display:none;text-align:center;padding:96px 0">
+    <div class="spin mb24"></div>
+    <h3 style="font-size:22px;font-weight:700;margin-bottom:8px">Analysing your resume…</h3>
+    <p class="text-muted" id="load-msg">Parsing document structure…</p>
+  </div>
+
+  <!-- Results -->
+  <div id="sec-results" style="display:none">
+
+    <!-- Score Cards -->
+    <div class="g3 gap16 mb24">
+      <div class="card card-p tc">
+        <div class="ring-wrap">
+          <div class="ring" id="ring-ats"><span class="ring-val" id="val-ats">0</span></div>
+          <span class="ring-lbl">ATS Score</span>
+        </div>
+      </div>
+      <div class="card card-p tc">
+        <div class="ring-wrap">
+          <div class="ring" id="ring-cnt"><span class="ring-val" id="val-cnt">0</span></div>
+          <span class="ring-lbl">Content Quality</span>
+        </div>
+      </div>
+      <div class="card card-p tc">
+        <div class="ring-wrap">
+          <div class="ring" id="ring-fmt"><span class="ring-val" id="val-fmt">0</span></div>
+          <span class="ring-lbl">Formatting</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="card" style="overflow:hidden">
+      <div style="padding:20px 24px 0">
+        <div class="flex-ac gap4 mb0">
+          <div class="tabs" style="border-bottom:none;margin:0">
+            <button class="tab-btn on" data-tab="t-overview" onclick="rTab('t-overview',this)">Overview</button>
+            <button class="tab-btn" data-tab="t-keywords" onclick="rTab('t-keywords',this)">Keywords</button>
+            <button class="tab-btn" data-tab="t-improve" onclick="rTab('t-improve',this)">Improvements</button>
+            <button class="tab-btn" data-tab="t-rewrite" onclick="rTab('t-rewrite',this)">AI Rewrites</button>
+          </div>
+        </div>
+        <div class="hr" style="margin:0"></div>
+      </div>
+
+      <div style="padding:24px">
+        <!-- Overview -->
+        <div id="t-overview" class="tab-pane on">
+          <div class="flex-ac gap8 mb20">
+            <span id="r-grade" class="badge badge-green" style="font-size:13px;padding:5px 14px">Excellent</span>
+            <span id="r-summary" class="text-muted fs14"></span>
+          </div>
+          <div class="g2 gap20">
+            <div>
+              <div class="fw7 mb12" style="color:var(--green)">✅ Strengths</div>
+              <div id="r-strengths"></div>
+            </div>
+            <div>
+              <div class="fw7 mb12" style="color:var(--amber)">⚠ Areas to Improve</div>
+              <div id="r-gaps"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Keywords -->
+        <div id="t-keywords" class="tab-pane">
+          <p class="text-muted fs14 mb20">ATS keyword analysis for your target role. Add missing keywords naturally in your experience bullets.</p>
+          <div class="fw7 mb10">✅ Keywords Found</div>
+          <div id="r-found" class="mb20"></div>
+          <div class="hr"></div>
+          <div class="fw7 mb10">❌ Missing Keywords</div>
+          <div id="r-missing"></div>
+        </div>
+        <!-- Improvements -->
+        <div id="t-improve" class="tab-pane">
+          <div id="r-improve-list"></div>
+        </div>
+        <!-- AI Rewrites -->
+        <div id="t-rewrite" class="tab-pane">
+          <div class="alert alert-info mb20">💡 AI-generated rewrites to make your bullet points stronger and more impactful.</div>
+          <div id="r-rewrites"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap12 mt20" style="flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="location.href='career.html'">View Career Roadmap →</button>
+      <button class="btn btn-ghost" onclick="resetAnalysis()">Analyse Another Resume</button>
+      <button class="btn btn-ghost" onclick="location.href='agent.html'">Chat with AI Mentor</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="../js/utils.js"></script>
+<script>
+const LOAD_MSGS = [
+  'Parsing document structure…',
+  'Extracting keywords & skills…',
+  'Calculating ATS compatibility score…',
+  'Analysing content quality…',
+  'Comparing with job requirements…',
+  'Generating improvement suggestions…',
+  'Preparing your report…'
+];
+
+let loadInterval;
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f) handleFile({ target: { files: [f] } });
+}
+function handleFile(e) {
+  const f = e.target.files[0]; if (!f) return;
+  document.getElementById('drop-zone').innerHTML = `
+    <div class="drop-ico">✅</div>
+    <h3>${f.name}</h3>
+    <p>${(f.size/1024).toFixed(1)} KB · Click to change</p>`;
+  if (f.type === 'text/plain') {
+    const r = new FileReader(); r.onload = ev => { document.getElementById('resume-txt').value = ev.target.result; }; r.readAsText(f);
+  }
+}
+
+function rTab(id, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById(id)?.classList.add('on');
+  btn.classList.add('on');
+}
+
+async function runAnalysis() {
+  const txt  = document.getElementById('resume-txt').value.trim();
+  const role = document.getElementById('target-role').value.trim() || VG.load('profile').role || 'Software Engineer';
+  const jd   = document.getElementById('job-desc').value.trim();
+  if (!txt) { alert('Please paste your resume text or upload a file.'); return; }
+
+  document.getElementById('sec-upload').style.display = 'none';
+  document.getElementById('sec-loading').style.display = 'block';
+  loadInterval = cycleMsg('load-msg', LOAD_MSGS, 850);
+
+  const profile = VG.load('profile');
+  let result = await apiPost('/resume/analyse', { resume_text: txt, target_role: role, job_desc: jd, profile });
+  if (!result) result = mockAnalyse(txt, role);
+
+  clearInterval(loadInterval);
+  document.getElementById('sec-loading').style.display = 'none';
+  renderResults(result);
+}
+
+function mockAnalyse(txt, role) {
+  const wc = txt.split(/\s+/).length;
+  const hasNums  = /\d+%|\d+x|\d+ (users|requests|people|teams|projects)/i.test(txt);
+  const hasVerbs = /\b(built|led|designed|developed|implemented|achieved|reduced|improved|launched|optimised)\b/i.test(txt);
+  const hasCont  = /@|github|linkedin|portfolio/i.test(txt);
+
+  let ats = 48 + Math.min(20, Math.floor(wc/20)) + (hasNums?12:0) + (hasVerbs?8:0) + (hasCont?7:0);
+  ats = Math.min(94, ats);
+  const cnt = Math.min(90, ats - 4 + (hasNums?4:0));
+  const fmt = Math.min(93, ats + 3);
+
+  const KW = {
+    'Software Engineer':    { found:['Python','JavaScript','REST API','Git','Problem Solving','OOP'],  miss:['Docker','Kubernetes','CI/CD','AWS','TypeScript','Microservices','Redis'] },
+    'Data Scientist':       { found:['Python','SQL','Pandas','Statistics','Machine Learning'],          miss:['TensorFlow','PyTorch','Spark','MLflow','A/B Testing','Airflow','Feature Engineering'] },
+    'Data Analyst':         { found:['SQL','Excel','Python','Tableau'],                                miss:['Power BI','dbt','Looker','Airflow','A/B Testing','Statistical Modelling'] },
+    'Product Manager':      { found:['Agile','Scrum','Roadmap','User Stories','Communication'],         miss:['SQL','A/B Testing','OKRs','Figma','Product Analytics','Go-to-market'] },
+    'DevOps Engineer':      { found:['Linux','Git','CI/CD','Docker'],                                  miss:['Kubernetes','Terraform','Ansible','Prometheus','Grafana','AWS EKS'] },
+    'Full-Stack Developer': { found:['HTML','CSS','JavaScript','React','Node.js'],                     miss:['TypeScript','GraphQL','Redis','Docker','PostgreSQL','Testing'] },
+  };
+  const kw = KW[role] || KW['Software Engineer'];
+
+  return {
+    ats, cnt, fmt,
+    grade: ats>=82?'Excellent':ats>=68?'Good':'Needs Work',
+    summary: `Your resume scores ${ats}/100 for ATS. ${ats>=70?'Strong foundation — targeted improvements will make it shine.':'Several improvements can significantly boost your shortlisting rate.'}`,
+    strengths: [
+      'Contact information is clearly presented and accessible',
+      'Technical skills section includes industry-relevant keywords',
+      `${hasVerbs?'Action verbs used effectively in experience section':'Education credentials clearly structured and easy to scan'}`,
+      'Overall structure is logical and follows standard conventions'
+    ],
+    gaps: [
+      'Missing quantifiable achievements — add numbers, percentages, and impact metrics',
+      `Critical missing keywords for ${role}: ${kw.miss.slice(0,3).join(', ')}`,
+      'Professional summary is weak or missing — should target the specific role clearly',
+      hasCont?'Consider adding portfolio project links for stronger credibility':'Add GitHub/portfolio URL — 73% of recruiters check before interviews'
+    ],
+    found: kw.found,
+    miss: kw.miss,
+    improvements: [
+      { pri:'High', title:'Quantify Every Achievement', desc:'Change "worked on web app" → "Built React web app serving 2,000+ DAU, reducing load time by 38% via lazy loading".' },
+      { pri:'High', title:'Write a Strong Professional Summary', desc:`Add a 3-line summary targeting ${role}. Include experience level, key skills, and the value you bring.` },
+      { pri:'Medium', title:`Add Missing ATS Keywords`, desc:`Naturally integrate: ${kw.miss.slice(0,4).join(', ')} into your bullet points and skills section.` },
+      { pri:'Medium', title:'Add GitHub / Portfolio Link', desc:'Recruiters and ATS systems value demonstrable work. Link your GitHub in the header section.' },
+      { pri:'Low', title:'Standardise Date Formats', desc:'Use one consistent format throughout: "Jan 2023 – May 2024". Inconsistency signals lack of attention to detail.' }
+    ],
+    rewrites: [
+      { before:'"Worked on several web development projects"', after:'"Built 4 full-stack apps using React + Node.js, deployed on AWS, serving 1,200+ daily users with 99.8% uptime"' },
+      { before:'"Helped with data analysis tasks"', after:'"Analysed customer churn data (Python/Pandas), surfaced 3 key drivers, informing a retention strategy that reduced churn by 22%"' },
+      { before:'"Good team player and communicator"', after:'"Led cross-functional team of 8 (FE, BE, QA) using Agile/Scrum, maintaining 96% sprint completion across a 7-month project"' }
+    ]
+  };
+}
+
+function renderResults(r) {
+  document.getElementById('sec-results').style.display = 'block';
+  document.getElementById('sec-results').scrollIntoView({ behavior:'smooth' });
+
+  animateRing('ring-ats','val-ats', r.ats, 'var(--cyan)');
+  animateRing('ring-cnt','val-cnt', r.cnt, 'var(--violet)');
+  animateRing('ring-fmt','val-fmt', r.fmt, 'var(--green)');
+
+  const gb = document.getElementById('r-grade');
+  gb.textContent = r.grade;
+  gb.className   = 'badge ' + (r.ats>=82?'badge-green':r.ats>=68?'badge-cyan':'badge-amber');
+  gb.style.cssText += 'font-size:13px;padding:5px 14px';
+  document.getElementById('r-summary').textContent = r.summary;
+
+  document.getElementById('r-strengths').innerHTML = r.strengths.map(s =>
+    `<div class="flex gap8 mb8 fs14"><span style="color:var(--green);flex-shrink:0">✓</span><span>${s}</span></div>`
+  ).join('');
+  document.getElementById('r-gaps').innerHTML = r.gaps.map(g =>
+    `<div class="flex gap8 mb8 fs14"><span style="color:var(--amber);flex-shrink:0">!</span><span>${g}</span></div>`
+  ).join('');
+
+  document.getElementById('r-found').innerHTML   = chipHTML(r.found,  'have');
+  document.getElementById('r-missing').innerHTML = chipHTML(r.miss, 'miss');
+
+  document.getElementById('r-improve-list').innerHTML = r.improvements.map(i => `
+    <div class="card" style="padding:18px;margin-bottom:12px;border-radius:12px">
+      <div class="flex-ac gap8 mb8">
+        <span class="badge ${i.pri==='High'?'badge-red':i.pri==='Medium'?'badge-amber':'badge-blue'}">${i.pri}</span>
+        <strong style="font-size:14px">${i.title}</strong>
+      </div>
+      <p class="text-muted fs14">${i.desc}</p>
+    </div>`).join('');
+
+  document.getElementById('r-rewrites').innerHTML = r.rewrites.map(rw => `
+    <div style="margin-bottom:24px">
+      <span class="badge badge-red mb8" style="display:inline-block">Before</span>
+      <div class="card" style="padding:14px;border-radius:10px;font-size:14px;color:var(--muted)">${rw.before}</div>
+      <span class="badge badge-green mb8 mt12" style="display:inline-block">After</span>
+      <div class="card" style="padding:14px;border-radius:10px;font-size:14px;border-color:rgba(74,222,128,.3)">${rw.after}</div>
+    </div>`).join('');
+}
+
+function resetAnalysis() {
+  document.getElementById('sec-results').style.display = 'none';
+  document.getElementById('sec-upload').style.display = 'block';
+  document.getElementById('resume-txt').value = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
